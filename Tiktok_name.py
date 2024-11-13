@@ -8,7 +8,7 @@ def sort_entries(entries):
 def check_name_exists(name):
     """检查名字是否已存在于所有分类文件中"""
     filenames = ["fav.txt", "like.txt", "leg.txt", "body.txt", "face.txt", 
-                 "Num1.txt", "Num2.txt", "Num3.txt", "Num4.txt", 
+                 "COS.txt", "music.txt", "youth.txt", "Joker.txt",
                  "Num5.txt", "Num6.txt", "Num7.txt", "Num8.txt", "data.txt"]
     for filename in filenames:
         if os.path.exists(filename):
@@ -20,9 +20,8 @@ def check_name_exists(name):
     return False
 
 def save_to_file(name, url, is_fav, name_like_like, category):
-    # 去除 URL 中的“这个来自”部分
-    if "这个来自" in url:
-        url = url.replace("这个来自", "").strip()
+    # 去除 URL 中的指定文本
+    url = url.replace("长按复制此条消息，打开抖音搜索，查看TA的更多作品。", "").strip()
 
     # 根据条件选择文件名
     if is_fav:
@@ -103,11 +102,11 @@ if __name__ == "__main__":
             # 仅在 name_like_like 为 yes 时询问 category
             if name_like_like:
                 while True:
-                    category = input("Choose a category (leg/body/face/Num1/Num2/Num3/Num4/Num5/Num6/Num7/Num8): ").strip().lower()
-                    if category in ["leg", "body", "face", "num1", "num2", "num3", "num4", "num5", "num6", "num7", "num8"]:
+                    category = input("Choose a category (leg/body/face/COS/music/youth/Joker/Num5/Num6/Num7/Num8): ").strip().lower()
+                    if category in ["leg", "body", "face", "cos", "music", "youth", "joker", "num5", "num6", "num7", "num8"]:
                         category = category.capitalize()  # 将分类转为首字母大写以匹配文件名
                         break
-                    print("Please enter a valid category: leg, body, face, Num1, Num2, Num3, Num4, Num5, Num6, Num7, or Num8.")
+                    print("Please enter a valid category: leg, body, face, COS, music, youth, Joker, Num5, Num6, Num7, or Num8.")
             else:
                 category = None  # 没有分类
         else:
