@@ -101,11 +101,11 @@ if __name__ == "__main__":
             # 仅在 name_like_like 为 yes 时询问 category
             if name_like_like:
                 while True:
-                    category = input("Choose a category (leg/body/face/Num1/Num2/Num3/Num4): ").strip().lower()
-                    if category in ["leg", "body", "face", "num1", "num2", "num3", "num4"]:
+                    category = input("Choose a category (leg/body/face/music/Num2/Num3/Num4/Num5/Num6): ").strip().lower()
+                    if category in ["leg", "body", "face", "music", "num2", "num3", "num4","num5","num6"]:
                         category = category.capitalize()  # 将分类转为首字母大写以匹配文件名
                         break
-                    print("Please enter a valid category: leg, body, face, Num1, Num2, Num3, or Num4.")
+                    print("Please enter a valid category: leg, body, face, music, Num2, Num3, or Num4 Num5 Num6.")
             else:
                 category = None  # 没有分类
         else:
