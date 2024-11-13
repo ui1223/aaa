@@ -5,6 +5,18 @@ def sort_entries(entries):
     """对条目按名字的拼音排序"""
     return sorted(entries, key=lambda x: lazy_pinyin(x[0]))
 
+def check_name_exists(name):
+    """检查名字是否已存在于所有分类文件中"""
+    filenames = ["fav.txt", "like.txt", "leg.txt", "body.txt", "face.txt", "Num1.txt", "Num2.txt", "Num3.txt", "Num4.txt", "data.txt"]
+    for filename in filenames:
+        if os.path.exists(filename):
+            with open(filename, "r", encoding="utf-8") as file:
+                for line in file:
+                    existing_name = line.strip().split(' ', 1)[0]
+                    if existing_name == name:
+                        return True
+    return False
+
 def save_to_file(name, url, is_fav, name_like_like, category):
     # 去除 URL 中的“这个来自”部分
     if "这个来自" in url:
@@ -15,16 +27,11 @@ def save_to_file(name, url, is_fav, name_like_like, category):
         filename = "fav.txt"
     elif name_like_like:
         filename = "like.txt"
+        # 如果有分类，进一步决定文件名
+        if category:
+            filename = f"{category}.txt"
     else:
-        # 根据分类选择文件名
-        if category == "leg":
-            filename = "leg.txt"
-        elif category == "body":
-            filename = "body.txt"
-        elif category == "face":
-            filename = "face.txt"
-        else:
-            filename = "data.txt"  # 默认文件
+        filename = "data.txt"  # 默认文件
 
     # 确保文件存在
     if not os.path.exists(filename):
@@ -41,11 +48,6 @@ def save_to_file(name, url, is_fav, name_like_like, category):
                     entries.append((existing_name, existing_url))
                 except ValueError:
                     print(f"Skipping malformed line: {line}")
-
-    # 检查是否存在相同的名字
-    if name in [entry[0] for entry in entries]:
-        print("Name already exists.")
-        return
 
     # 添加新条目并排序
     entries.append((name, url))
@@ -64,6 +66,10 @@ if __name__ == "__main__":
         while True:
             name = input("Enter name: ").strip()
             if name:
+                # 检查名字是否在所有文件中已存在
+                if check_name_exists(name):
+                    print("Name already exists in one of the files.")
+                    continue
                 break
             print("Name cannot be empty. Please enter a valid name.")
 
@@ -84,20 +90,26 @@ if __name__ == "__main__":
 
         # 仅在 is_fav 为 no 时询问 name_like_like
         if not is_fav:
+            # 确保输入的 name_like_like 非空
             while True:
                 name_like_like_input = input("Do you 'like' this name? (yes/no): ").strip().lower()
                 if name_like_like_input in ["yes", "no"]:
                     name_like_like = name_like_like_input == "yes"
                     break
                 print("Please enter 'yes' or 'no'.")
+
+            # 仅在 name_like_like 为 yes 时询问 category
+            if name_like_like:
+                while True:
+                    category = input("Choose a category (leg/body/face/Num1/Num2/Num3/Num4): ").strip().lower()
+                    if category in ["leg", "body", "face", "num1", "num2", "num3", "num4"]:
+                        category = category.capitalize()  # 将分类转为首字母大写以匹配文件名
+                        break
+                    print("Please enter a valid category: leg, body, face, Num1, Num2, Num3, or Num4.")
+            else:
+                category = None  # 没有分类
         else:
             name_like_like = False  # 如果是 favourite，则自动设置 name_like_like 为 False
-
-        # 确保输入的 category 非空并且在可选项中
-        while True:
-            category = input("Choose a category (leg/body/face): ").strip().lower()
-            if category in ["leg", "body", "face"]:
-                break
-            print("Please enter a valid category: leg, body, or face.")
+            category = None  # 不需要分类
 
         save_to_file(name, url, is_fav, name_like_like, category)
