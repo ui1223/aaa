@@ -119,5 +119,3 @@ if __name__ == "__main__":
         else:
             print("Skipping current entry due to exit command.")
 
-
-
