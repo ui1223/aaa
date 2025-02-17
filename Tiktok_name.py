@@ -29,15 +29,21 @@ def get_valid_category():
     """从用户输入中获取有效的分类，返回标准化的分类名称"""
     while True:
         category_input = input(f"Choose a category ({'/'.join(CATEGORIES)}): ").strip().lower()
+        if category_input == 'exit':
+            print("Skipping category selection.")
+            return None
         category = next((c for c in CATEGORIES if c.lower() == category_input), None)
         if category:
             return category
-        print(f"Please enter a valid category: {', '.join(CATEGORIES)}.")
+        print(f"Please enter a valid category or type 'exit' to skip: {', '.join(CATEGORIES)}.")
 
 def get_user_input():
     """获取用户输入的 name, url, is_fav, name_like_like, 和 category"""
     while True:
-        name = input("Enter name: ").strip()
+        name = input("Enter name (or 'exit' to skip): ").strip()
+        if name == 'exit':
+            print("Skipping entry.")
+            return None, None, None, None, None
         if name:
             if check_name_exists(name):
                 print("Name already exists in one of the files.")
@@ -45,18 +51,30 @@ def get_user_input():
             break
         print("Name cannot be empty. Please enter a valid name.")
 
-    url = input("Enter URL: ").strip()
+    url = input("Enter URL (or 'exit' to skip): ").strip()
+    if url == 'exit':
+        print("Skipping entry.")
+        return None, None, None, None, None
     url = clean_url(url) if url else None
     if not url:
         print("URL cannot be empty.")
         return get_user_input()
 
-    is_fav = input("Is this a favourite? (yes/no): ").strip().lower() == "yes"
+    is_fav = input("Is this a favourite? (yes/no/exit): ").strip().lower()
+    if is_fav == 'exit':
+        print("Skipping entry.")
+        return None, None, None, None, None
+    is_fav = is_fav == "yes"
+
     name_like_like = False
     category = None
 
     if not is_fav:
-        name_like_like = input("Do you 'like' this name? (yes/no): ").strip().lower() == "yes"
+        name_like_like_input = input("Do you 'like' this name? (yes/no/exit): ").strip().lower()
+        if name_like_like_input == 'exit':
+            print("Skipping entry.")
+            return None, None, None, None, None
+        name_like_like = name_like_like_input == "yes"
         if name_like_like:
             category = get_valid_category()
 
@@ -94,5 +112,12 @@ def save_to_file(name, url, is_fav, name_like_like, category):
 
 if __name__ == "__main__":
     while True:
-        name, url, is_fav, name_like_like, category = get_user_input()
-        save_to_file(name, url, is_fav, name_like_like, category)
+        user_input = get_user_input()
+        if any(user_input):
+            name, url, is_fav, name_like_like, category = user_input
+            save_to_file(name, url, is_fav, name_like_like, category)
+        else:
+            print("Skipping current entry due to exit command.")
+
+
+
