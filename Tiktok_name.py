@@ -37,6 +37,17 @@ def get_valid_category():
             return category
         print(f"Please enter a valid category or type 'exit' to skip: {', '.join(CATEGORIES)}.")
 
+def get_yes_no_input(prompt):
+    """获取用户输入的 yes 或 no，并进行验证"""
+    while True:
+        response = input(prompt).strip().lower()
+        if response in ['yes', 'no']:
+            return response == 'yes'
+        elif response == 'exit':
+            print("Skipping entry.")
+            return None
+        print("Please enter 'yes', 'no', or 'exit': ")
+
 def get_user_input():
     """获取用户输入的 name, url, is_fav, name_like_like, 和 category"""
     while True:
@@ -60,21 +71,17 @@ def get_user_input():
         print("URL cannot be empty.")
         return get_user_input()
 
-    is_fav = input("Is this a favourite? (yes/no/exit): ").strip().lower()
-    if is_fav == 'exit':
-        print("Skipping entry.")
+    is_fav = get_yes_no_input("Is this a favourite? (yes/no/exit): ")
+    if is_fav is None:
         return None, None, None, None, None
-    is_fav = is_fav == "yes"
 
     name_like_like = False
     category = None
 
     if not is_fav:
-        name_like_like_input = input("Do you 'like' this name? (yes/no/exit): ").strip().lower()
-        if name_like_like_input == 'exit':
-            print("Skipping entry.")
+        name_like_like = get_yes_no_input("Do you 'like' this name? (yes/no/exit): ")
+        if name_like_like is None:
             return None, None, None, None, None
-        name_like_like = name_like_like_input == "yes"
         if name_like_like:
             category = get_valid_category()
 
@@ -118,4 +125,3 @@ if __name__ == "__main__":
             save_to_file(name, url, is_fav, name_like_like, category)
         else:
             print("Skipping current entry due to exit command.")
-
